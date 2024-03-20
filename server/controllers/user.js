@@ -1,9 +1,9 @@
 import user from '../models/userModel.js';
 import bcrypt from 'bcryptjs';
-import { OAuth2Client } from 'google-auth-library';
 import emailToken from '../models/emailTokenModel.js';
 import {sendEmail} from '../utils/sendEmail.js';
 import crypto from 'crypto';
+
 export const register = async (req, res) => {
   const { firstname, lastname, email, password } = req.body;
   try {
@@ -24,6 +24,7 @@ export const register = async (req, res) => {
     const url=`${process.env.BASE_URL}/auth/verify/${newUser._id}/${email_token.token}`;
     await sendEmail(newUser.email,"Verify Your Email",url)
     res.status(201).json({message:'Success'})
+
   } catch (error) {
     console.log('Error in register ' + error);
     res.status(500).send(error);
@@ -33,16 +34,20 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const valid = await user.findOne({ email });
-    if (!valid) res.status(200).json({ message: 'User dont exist' });
+    if (!valid) {
+      res.status(200).json({ message: 'User does not exist' });
+      return
+    }
     const validPassword = await bcrypt.compare(password, valid.password);
     if (!validPassword) {
       res.status(200).json({ message: 'Invalid Credentials' });
+      return
     }
     const verified=valid.verified
     if (!verified){
+      let id=valid._id
+      let existingToken=await emailToken.deleteOne({ userId:id })
       const newToken = crypto.randomBytes(32).toString("hex");
-      console.log(newToken)
-      console.log(valid)
       const email_token=new emailToken({
         userId:valid._id,
         token:newToken
@@ -80,45 +85,7 @@ export const validUser = async (req, res) => {
     console.log(error);
   }
 };
-export const googleAuth = async (req, res) => {
-  try {
-    const { tokenId } = req.body;
-    const client = new OAuth2Client(process.env.CLIENT_ID);
-    const verify = await client.verifyIdToken({
-      idToken: tokenId,
-      audience: process.env.CLIENT_ID,
-    });
-    const { email_verified, email, name, picture } = verify.payload;
-    if (!email_verified) res.json({ message: 'Email Not Verified' });
-    const userExist = await user.findOne({ email }).select('-password');
-    if (userExist) {
-      res.cookie('userToken', tokenId, {
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      });
-      res.status(200).json({ token: tokenId, user: userExist });
-    } else {
-      const password = email + process.env.CLIENT_ID;
-      const newUser = await user({
-        name: name,
-        profilePic: picture,
-        password,
-        email,
-      });
-      await newUser.save();
-      res.cookie('userToken', tokenId, {
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000,
-      });
-      res
-        .status(200)
-        .json({ message: 'User registered Successfully', token: tokenId });
-    }
-  } catch (error) {
-    res.status(500).json({ error: error });
-    console.log('error in googleAuth backend' + error);
-  }
-};
+
 
 export const logout = (req, res) => {
   req.rootUser.tokens = req.rootUser.tokens.filter((e) => e.token != req.token);

@@ -33,14 +33,14 @@ function MessageHistory({ messages }) {
                 )}
               <span className='tracking-wider text-[15px]  font-medium'
                 style={{
-                  backgroundColor: `${m.sender._id === activeUser.id ? "#268d61" : "#f0f0f0"
+                  backgroundColor: `${m.sender._id === activeUser.id ? "#405DE6" : "#f0f0f0"
                     }`,
                   marginLeft: isSameSenderMargin(messages, m, i, activeUser.id),
                   marginTop: isSameUser(messages, m, i, activeUser.id) ? 3 : 10,
                   borderRadius: `${m.sender._id === activeUser.id ? "10px 10px 0px 10px" : "10px 10px 10px 0"}`,
                   padding: "10px 18px",
                   maxWidth: "460px",
-                  color: `${m.sender._id === activeUser.id ? "#ffff" : "#848587"}`
+                  color: `${m.sender._id === activeUser.id ? "#ffff" : "#566573"}`
                 }}
               >
                 {m.message}
