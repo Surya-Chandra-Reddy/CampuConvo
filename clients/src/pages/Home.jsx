@@ -68,7 +68,7 @@ function Home() {
   return (
     <>
 
-      <div className="bg-[#282C35!] scrollbar-hide z-10 h-[100vh]  lg:w-[90%] lg:mx-auto overflow-y-hidden shadow-2xl">
+      <div className="bg-[#282C35!] scrollbar-hide z-10 h-[100vh]  lg:w-[100%] lg:mx-auto overflow-hidden shadow-2xl">
 
         <div className='flex'>
           {
@@ -90,7 +90,7 @@ function Home() {
                         style={{ width: "15px", height: "15px", fontSize: "9px", padding: "4px 2px 2px 2px" }}
                       />
                       {
-                        showNotifications ? <RiNotificationBadgeFill style={{ width: "25px", height: "25px", color: "#319268" }} /> : <BiNotification style={{ color: "#319268", width: "25px", height: "25px" }} />
+                        showNotifications ? <RiNotificationBadgeFill style={{ width: "25px", height: "25px", color: "#405DE6" }} /> : <BiNotification style={{ color: "#405DE6", width: "25px", height: "25px" }} />
                       }
 
                     </button>

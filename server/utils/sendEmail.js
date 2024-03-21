@@ -5,13 +5,13 @@ export const sendEmail = async (email, subject, text) => {
         host: process.env.HOST,
         secure: process.env.SECURE,
         auth: {
-          user: process.env.USER,
+          user: process.env.EMAIL,
           pass: process.env.PASS,
         },
       });
       
       const mailOptions={
-          from:process.env.USER,
+          from:process.env.EMAIL,
           to:email,
           subject:subject,
           text:text
